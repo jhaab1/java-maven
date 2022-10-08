@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('GIT checkout') {
+            steps {
+                git 'https://github.com/jhaab1/java-maven.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'cd /Users/smitashivam/javaProject/java-maven; source .profile; mvn compile'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'cd /Users/smitashivam/javaProject/java-maven; source .profile; mvn test'
+            }
+        }
+        stage('Package') {
+            steps {
+                sh 'cd /Users/smitashivam/javaProject/java-maven; source .profile; mvn package'
+                }
+            }
+        stage('Deploy') {
+            steps {
+                withEnv(['JENKINS_NODE_COOKIE=dontKillMe']) {
+                sh 'cd /Users/smitashivam/javaProject/java-maven; source .profile; nohup java -jar -Dserver.port=8081 target/spring-petclinic-2.3.1.BUILD-SNAPSHOT.jar &'
+                }
+            }
+            }
+        }
+        
+    }
+
